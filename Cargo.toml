@@ -1,6 +1,6 @@
 [package]
 name = "sctransform_rs"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Rust backend for SCTransform normalization"
 license = "MIT"
@@ -12,6 +12,9 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 pyo3 = { version = "0.22", features = ["abi3-py310"] }
+numpy = "0.22"
+ndarray = { version = "0.16", features = ["rayon"] }
+rayon = "1.10"
 
 [profile.release]
 lto = "thin"

@@ -6,18 +6,34 @@ A fast Rust implementation of [SCTransform v2](https://doi.org/10.1186/s13059-02
 
 ## Status
 
-**v0.1.0 — environment + skeleton.** Build system works end-to-end; algorithm not yet implemented.
+**v0.2.0 — Pearson residual computation.** Step 3 of the SCTransform pipeline
+(post-fitting residuals) is implemented in Rust with rayon-parallel-per-gene
+execution. Validated against a numpy reference at `rtol=1e-10`. End-to-end
+cross-validation against R `sctransform::vst()` is deferred to v0.4.0.
 
 ### Roadmap
 
-| Version | Milestone |
-|---|---|
-| v0.1.0 | Build skeleton, CI, smoke-test function |
-| v0.2.0 | Pearson residual computation (pure arithmetic) |
-| v0.3.0 | Per-gene Poisson/NB GLM fitting (IRLS, offset model) |
-| v0.4.0 | Kernel regularization + end-to-end `vst()` |
-| v0.5.0 | Scanpy/AnnData integration |
-| v1.0.0 | Full v1 model, PyPI release |
+| Version | Milestone | State |
+|---|---|---|
+| v0.1.0 | Build skeleton, CI, smoke-test function | ✅ |
+| v0.2.0 | Pearson residual computation (pure arithmetic) | ✅ |
+| v0.3.0 | Per-gene Poisson/NB GLM fitting (IRLS, offset model) | — |
+| v0.4.0 | Kernel regularization + end-to-end `vst()`, R validation | — |
+| v0.5.0 | Scanpy/AnnData integration | — |
+| v1.0.0 | Full v1 model, PyPI release | — |
+
+### Benchmarks (v0.2.0, residual computation only)
+
+Synthetic NB-distributed data, single machine, median of 5 runs:
+
+| Shape (genes × cells) | Rust (s) | numpy ref (s) | Speedup |
+|---|---|---|---|
+| 2,000 × 3,000 (PBMC-3k-HVG) | 0.05 | 0.20 | 4.0× |
+| 5,000 × 10,000 (PBMC-10k-HVG) | 0.74 | 1.90 | 2.6× |
+| 2,000 × 30,000 (wide) | 0.57 | 2.12 | 3.7× |
+
+Reproduce: `pixi run -e dev bench`. Comparison against `pySCTransform`
+end-to-end follows in v0.4.0.
 
 ## Installation
 
