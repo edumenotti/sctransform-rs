@@ -1,0 +1,65 @@
+# conda-forge recipe skeleton for sctransform-rs.
+#
+# This file is NOT used by this repo's CI. To get the package onto conda-forge:
+#   1. Fork https://github.com/conda-forge/staged-recipes
+#   2. Copy this `recipe/` directory into `recipes/sctransform-rs/` in your fork
+#   3. Update `{% set version = "..." %}` and `sha256` (from the PyPI sdist checksum)
+#   4. Open a PR against conda-forge/staged-recipes; the conda-forge team reviews
+#   5. Once merged, a dedicated `sctransform-rs-feedstock` repo is auto-created
+#      and all future releases are maintained there — not here.
+#
+# Submission guide: https://conda-forge.org/docs/maintainer/adding_pkgs.html
+
+{% set name = "sctransform-rs" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sctransform_rs-{{ version }}.tar.gz
+  sha256: 0000000000000000000000000000000000000000000000000000000000000000
+
+build:
+  number: 0
+  skip: true  # [py<310]
+  # Platform-specific scripts delegate to maturin (see build.sh / bld.bat)
+  script_env:
+    - PYTHON
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+  host:
+    - python
+    - pip
+    - maturin >=1.7,<2
+    - numpy >=1.24
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - sctransform_rs
+  commands:
+    - python -c "import sctransform_rs; assert sctransform_rs.add(2, 3) == 5"
+
+about:
+  home: https://github.com/edumenotti/sctransform-rs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast Rust implementation of SCTransform v2 normalization for scRNA-seq
+  description: |
+    sctransform-rs is a Rust-backed Python package providing the SCTransform v2
+    normalization algorithm for single-cell RNA-seq data, exposed via PyO3.
+    Drop-in compatible with pySCTransform, with a compiled backend for speed.
+  dev_url: https://github.com/edumenotti/sctransform-rs
+  doc_url: https://github.com/edumenotti/sctransform-rs
+
+extra:
+  recipe-maintainers:
+    - edumenotti

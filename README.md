@@ -19,17 +19,44 @@ A fast Rust implementation of [SCTransform v2](https://doi.org/10.1186/s13059-02
 | v0.5.0 | Scanpy/AnnData integration |
 | v1.0.0 | Full v1 model, PyPI release |
 
-## Installation (development)
+## Installation
 
-Requires [pixi](https://pixi.sh) and [rustup](https://rustup.rs).
+### For users (recommended)
+
+Pre-built wheels are published to PyPI and conda-forge. Pick one:
 
 ```bash
-git clone <repo-url>
+pip install sctransform-rs
+```
+
+```bash
+conda install -c conda-forge sctransform-rs
+```
+
+No Rust toolchain, no repository clone, and no `pixi` are required — the wheel
+ships a compiled ABI3 extension module that works on CPython ≥ 3.10 across
+Linux (x86_64, aarch64), macOS (x86_64, arm64), and Windows (x86_64).
+
+<details>
+<summary><strong>Building from source (for contributors)</strong></summary>
+
+Only needed if you are modifying the Rust backend. Requires
+[pixi](https://pixi.sh) and [rustup](https://rustup.rs).
+
+```bash
+git clone https://github.com/edumenotti/sctransform-rs
 cd sctransform-rs
 pixi install -e dev
 pixi run -e dev build
 pixi run -e dev test
 ```
+
+The `pixi run -e dev build` task invokes `maturin develop --release`, which
+compiles the Rust crate and installs an editable Python package pointing at
+`python/sctransform_rs/`. Pure-Python changes under that directory are picked
+up without rebuilding; Rust changes require re-running the build task.
+
+</details>
 
 ## Project layout
 
