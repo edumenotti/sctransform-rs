@@ -33,7 +33,7 @@ pip install sctransform-rs
 conda install -c conda-forge sctransform-rs
 ```
 
-No Rust toolchain, no repository clone, and no `pixi` are required — the wheel
+No Rust toolchain and no repository clone are required — the wheel
 ships a compiled ABI3 extension module that works on CPython ≥ 3.10 across
 Linux (x86_64, aarch64), macOS (x86_64, arm64), and Windows (x86_64).
 
