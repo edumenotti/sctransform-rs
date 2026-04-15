@@ -1,0 +1,35 @@
+# Rust
+/target/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+*.whl
+
+# pixi
+.pixi/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Maturin build artifacts
+/python/sctransform_rs/_core*.so
+/python/sctransform_rs/*.pyd
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Data (keep fixtures small and committed; large data excluded)
+/tests/fixtures/*.h5ad
+/tests/fixtures/*.rds
+/benchmarks/results/*.csv

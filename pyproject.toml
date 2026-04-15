@@ -1,0 +1,33 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "sctransform-rs"
+version = "0.1.0"
+description = "Fast Rust implementation of SCTransform normalization for scRNA-seq data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "sctransform-rs contributors" }]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+anndata = ["anndata>=0.10", "scanpy>=1.9", "scipy"]
+dev = ["pytest", "anndata>=0.10", "scanpy>=1.9", "scipy", "pandas"]
+
+[project.urls]
+Repository = "https://github.com/saketkc/sctransform-rs"
+
+[tool.maturin]
+module-name = "sctransform_rs._core"
+python-source = "python"
+features = ["pyo3/extension-module"]
