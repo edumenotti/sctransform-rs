@@ -73,6 +73,11 @@ fn compute_gene_row(
 ) {
     let inv_theta = 1.0 / theta_g;
     for (c, &x) in umi_row.iter().enumerate() {
+        // Cells with zero total UMI have no information → residual = 0.
+        if !log10_total[c].is_finite() {
+            out_row[c] = 0.0;
+            continue;
+        }
         let mu = (beta0_g + beta1_g * log10_total[c]).exp();
         let var = mu + mu * mu * inv_theta;
         let sigma = var.sqrt();

@@ -1,6 +1,6 @@
 [workspace]
 name = "sctransform-rs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Rust implementation of SCTransform normalization for scRNA-seq"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64"]
@@ -32,6 +32,8 @@ validation = { features = ["dev", "validation"], solve-group = "default" }
 [tasks]
 build = "maturin develop --release"
 build-dev = "maturin develop"
+clean = "cargo clean && rm -rf target/ python/sctransform_rs/*.so"
+
+[feature.dev.tasks]
 test = { cmd = "pytest tests/ -v", depends-on = ["build-dev"] }
 bench = "python benchmarks/run_benchmarks.py"
-clean = "cargo clean && rm -rf target/ python/sctransform_rs/*.so"

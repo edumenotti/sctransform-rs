@@ -3,10 +3,11 @@
 // crate-wide rather than per-function — it never indicates a real issue here.
 #![allow(clippy::useless_conversion)]
 
-use numpy::{IntoPyArray, PyArray2, PyReadonlyArray1, PyReadonlyArray2};
+use numpy::{IntoPyArray, PyArray1, PyArray2, PyReadonlyArray1, PyReadonlyArray2};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
+mod glm;
 mod residuals;
 
 #[pyfunction]
@@ -90,10 +91,57 @@ fn compute_residuals<'py>(
     Ok(out.into_pyarray_bound(py))
 }
 
+/// Fit the SCTransform v2 offset-model NB GLM for every gene.
+///
+/// Parameters
+/// ----------
+/// umi : np.ndarray[float64, shape=(n_genes, n_cells)]
+///     Dense UMI count matrix.
+/// total_umi : np.ndarray[float64, shape=(n_cells,)]
+///     Per-cell total UMI.
+/// max_iter : int
+///     Newton-Raphson iteration cap for theta fitting.
+///
+/// Returns
+/// -------
+/// (theta, beta0) : tuple of np.ndarray[float64, shape=(n_genes,)]
+///     Per-gene dispersion and intercept. Beta1 is fixed at ln(10) and
+///     materialised by the Python wrapper.
+#[pyfunction]
+#[pyo3(signature = (umi, total_umi, max_iter=50))]
+fn fit_glm_offset<'py>(
+    py: Python<'py>,
+    umi: PyReadonlyArray2<'py, f64>,
+    total_umi: PyReadonlyArray1<'py, f64>,
+    max_iter: usize,
+) -> PyResult<(Bound<'py, PyArray1<f64>>, Bound<'py, PyArray1<f64>>)> {
+    let umi_arr = umi.as_array();
+    let total_arr = total_umi.as_array();
+    let (n_genes, n_cells) = umi_arr.dim();
+    if total_arr.len() != n_cells {
+        return Err(PyValueError::new_err(format!(
+            "total_umi has length {}, expected n_cells = {}",
+            total_arr.len(),
+            n_cells
+        )));
+    }
+    let _ = n_genes;
+
+    let umi_owned = umi_arr.to_owned();
+    let total_owned = total_arr.to_owned();
+
+    let (theta, beta0) = py.allow_threads(|| {
+        glm::fit_glm_offset_dense(&umi_owned, total_owned.view(), max_iter)
+    });
+
+    Ok((theta.into_pyarray_bound(py), beta0.into_pyarray_bound(py)))
+}
+
 #[pymodule]
 fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(add, m)?)?;
     m.add_function(wrap_pyfunction!(compute_residuals, m)?)?;
+    m.add_function(wrap_pyfunction!(fit_glm_offset, m)?)?;
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }
